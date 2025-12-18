@@ -10,7 +10,6 @@ document.addEventListener('DOMContentLoaded', function() {
         {url: 'images/photo7.jpg', title: 'Большой дом'},
         {url: 'images/photo8.jpg', title: 'Дорога'}
     ];
-    
     // Элементы DOM
     const galleryTrack = document.querySelector('.gallery-track');
     const prevBtn = document.querySelector('.prev-btn');
@@ -21,22 +20,22 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Настройки
     let currentPage = 0;
-    let itemsPerView = getItemsPerView();
+    let itemsPerView = 3;
     const totalImages = images.length;
     
-    function getItemsPerView() {
-        const width = window.innerWidth;
-        if (width <= 768) return 1;
-        if (width <= 992) return 2;
-        return 3;
-    }
-    
+    // Инициализация галереи
     function initGallery() {
+        // Определяем сколько изображений показывать
+        updateItemsPerView();
+        
+        // Очищаем трек
         galleryTrack.innerHTML = '';
         
+        // Создаем все 8 изображений
         for (let i = 0; i < totalImages; i++) {
             const item = document.createElement('div');
             item.className = 'gallery-item';
+            item.setAttribute('data-index', i);
             item.innerHTML = `
                 <img src="${images[i].url}" alt="${images[i].title}">
                 <p>${images[i].title}</p>
@@ -44,54 +43,99 @@ document.addEventListener('DOMContentLoaded', function() {
             galleryTrack.appendChild(item);
         }
         
-        updateTotalPages();
+        // Рассчитываем и показываем количество страниц
+        updatePageInfo();
+        
+        // Создаем точки пейджера
         createPagerDots();
+        
+        // Показываем первую страницу
         goToPage(0);
     }
     
-    function updateTotalPages() {
+    // Обновление количества видимых элементов
+    function updateItemsPerView() {
+        const width = window.innerWidth;
+        if (width <= 768) {
+            itemsPerView = 1;
+        } else if (width <= 992) {
+            itemsPerView = 2;
+        } else {
+            itemsPerView = 3;
+        }
+    }
+    
+    // Обновление информации о страницах
+    function updatePageInfo() {
         const totalPages = Math.ceil(totalImages / itemsPerView);
         totalPagesSpan.textContent = totalPages;
         return totalPages;
     }
     
+    // Создание точек пейджера
     function createPagerDots() {
         pagerDots.innerHTML = '';
-        const totalPages = updateTotalPages();
+        const totalPages = updatePageInfo();
         
         for (let i = 0; i < totalPages; i++) {
             const dot = document.createElement('div');
             dot.className = 'pager-dot';
-            if (i === currentPage) dot.classList.add('active');
+            dot.setAttribute('data-page', i);
             
-            dot.addEventListener('click', () => goToPage(i));
+            if (i === currentPage) {
+                dot.classList.add('active');
+            }
+            
+            dot.addEventListener('click', () => {
+                goToPage(i);
+            });
+            
             pagerDots.appendChild(dot);
         }
     }
     
+    // Переход на страницу
     function goToPage(pageIndex) {
-        const totalPages = updateTotalPages();
+        const totalPages = updatePageInfo();
+        
+        // Проверяем границы
         if (pageIndex < 0) pageIndex = 0;
         if (pageIndex >= totalPages) pageIndex = totalPages - 1;
         
         currentPage = pageIndex;
-        const itemWidth = 100 / itemsPerView;
-        const offset = currentPage * itemWidth;
         
+        // Рассчитываем смещение
+        const offset = currentPage * 100;
+        
+        // Применяем трансформацию
         galleryTrack.style.transform = `translateX(-${offset}%)`;
+        
+        // Обновляем номер страницы
         currentPageSpan.textContent = currentPage + 1;
+        
+        // Обновляем точки пейджера
         updatePagerDots();
+        
+        // Обновляем кнопки
         updateNavButtons();
     }
     
+    // Обновление точек пейджера
     function updatePagerDots() {
-        document.querySelectorAll('.pager-dot').forEach((dot, i) => {
-            dot.classList.toggle('active', i === currentPage);
+        const dots = document.querySelectorAll('.pager-dot');
+        dots.forEach((dot, index) => {
+            if (index === currentPage) {
+                dot.classList.add('active');
+            } else {
+                dot.classList.remove('active');
+            }
         });
     }
     
+    // Обновление кнопок навигации
     function updateNavButtons() {
-        const totalPages = updateTotalPages();
+        const totalPages = updatePageInfo();
+        
         prevBtn.disabled = currentPage === 0;
         nextBtn.disabled = currentPage === totalPages - 1;
         
@@ -99,33 +143,46 @@ document.addEventListener('DOMContentLoaded', function() {
         nextBtn.style.opacity = nextBtn.disabled ? '0.5' : '1';
     }
     
+    // Следующая страница
     function nextPage() {
-        const totalPages = updateTotalPages();
-        if (currentPage < totalPages - 1) goToPage(currentPage + 1);
+        const totalPages = updatePageInfo();
+        if (currentPage < totalPages - 1) {
+            goToPage(currentPage + 1);
+        }
     }
     
+    // Предыдущая страница
     function prevPage() {
-        if (currentPage > 0) goToPage(currentPage - 1);
+        if (currentPage > 0) {
+            goToPage(currentPage - 1);
+        }
     }
     
+    // Обработчики событий
     prevBtn.addEventListener('click', prevPage);
     nextBtn.addEventListener('click', nextPage);
     
+    // Изменение размера окна
     window.addEventListener('resize', function() {
-        const newItemsPerView = getItemsPerView();
-        if (newItemsPerView !== itemsPerView) {
-            itemsPerView = newItemsPerView;
+        const oldItemsPerView = itemsPerView;
+        updateItemsPerView();
+        
+        if (oldItemsPerView !== itemsPerView) {
             createPagerDots();
-            const totalPages = updateTotalPages();
-            if (currentPage >= totalPages) currentPage = totalPages - 1;
-            goToPage(currentPage);
+            goToPage(0);
         }
     });
     
-    document.addEventListener('keydown', function(e) {
-        if (e.key === 'ArrowLeft') prevPage();
-        if (e.key === 'ArrowRight') nextPage();
+    // Поддержка клавиатуры
+    document.addEventListener('keydown', function(event) {
+        if (event.key === 'ArrowLeft') {
+            prevPage();
+        } else if (event.key === 'ArrowRight') {
+            nextPage();
+        }
     });
     
+    // Инициализация
     initGallery();
 });
+
