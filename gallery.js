@@ -1,37 +1,37 @@
 document.addEventListener('DOMContentLoaded', function() {
-    // Массив изображений с Pixabay
+    // Используем placeholder.com - всегда работает
     const images = [
         {
-            url: 'https://cdn.pixabay.com/photo/2015/04/23/22/00/tree-736885_1280.jpg',
-            title: 'Одинокое дерево на закате'
+            url: 'https://via.placeholder.com/800x600/4A90E2/FFFFFF?text=Горный+пейзаж',
+            title: 'Горный пейзаж'
         },
         {
-            url: 'https://cdn.pixabay.com/photo/2015/12/01/20/28/road-1072823_1280.jpg',
-            title: 'Лесная дорога осенью'
+            url: 'https://via.placeholder.com/800x600/50E3C2/FFFFFF?text=Лесное+озеро',
+            title: 'Лесное озеро'
         },
         {
-            url: 'https://cdn.pixabay.com/photo/2016/05/05/02/37/sunset-1373171_1280.jpg',
-            title: 'Закат на морском берегу'
+            url: 'https://via.placeholder.com/800x600/9013FE/FFFFFF?text=Морской+закат',
+            title: 'Морской закат'
         },
         {
-            url: 'https://cdn.pixabay.com/photo/2018/01/14/23/12/nature-3082832_1280.jpg',
-            title: 'Горный водопад'
+            url: 'https://via.placeholder.com/800x600/F5A623/FFFFFF?text=Пустынный+оазис',
+            title: 'Пустынный оазис'
         },
         {
-            url: 'https://cdn.pixabay.com/photo/2017/02/08/17/24/fantasy-2049567_1280.jpg',
-            title: 'Волшебный ночной лес'
+            url: 'https://via.placeholder.com/800x600/7ED321/FFFFFF?text=Тропический+лес',
+            title: 'Тропический лес'
         },
         {
-            url: 'https://cdn.pixabay.com/photo/2016/11/29/05/45/astronomy-1867616_1280.jpg',
-            title: 'Звездное небо и Млечный путь'
+            url: 'https://via.placeholder.com/800x600/BD10E0/FFFFFF?text=Северное+сияние',
+            title: 'Северное сияние'
         },
         {
-            url: 'https://cdn.pixabay.com/photo/2017/01/20/00/30/maldives-1993704_1280.jpg',
-            title: 'Тропический пляж с пальмами'
+            url: 'https://via.placeholder.com/800x600/417505/FFFFFF?text=Долина+цветов',
+            title: 'Долина цветов'
         },
         {
-            url: 'https://cdn.pixabay.com/photo/2016/11/21/17/44/arches-national-park-1846759_1280.jpg',
-            title: 'Пустынный каньон в США'
+            url: 'https://via.placeholder.com/800x600/D0021B/FFFFFF?text=Вулканический+кратер',
+            title: 'Вулканический кратер'
         }
     ];
     
@@ -43,38 +43,32 @@ document.addEventListener('DOMContentLoaded', function() {
     const totalPagesSpan = document.querySelector('.total-pages');
     const pagerDots = document.querySelector('.pager-dots');
     
-    // Настройки галереи
-    let currentPosition = 0;
-    let itemsPerView = 3;
-    let totalItems = images.length;
-    let totalPages = 0;
+    // Настройки
+    let currentPage = 0;
+    let itemsPerView = getItemsPerView();
+    
+    // Функция для определения количества видимых изображений
+    function getItemsPerView() {
+        const width = window.innerWidth;
+        if (width <= 768) return 1;
+        if (width <= 992) return 2;
+        return 3;
+    }
     
     // Инициализация галереи
     function initGallery() {
-        updateItemsPerView();
-        
-        // Очищаем галерею
+        // Очищаем трек
         galleryTrack.innerHTML = '';
         
-        // Создаем контейнеры для изображений
-        for (let i = 0; i < totalItems; i++) {
+        // Создаем 8 изображений
+        for (let i = 0; i < 8; i++) {
             const item = document.createElement('div');
             item.className = 'gallery-item';
             
-            // Проверяем, есть ли изображение для этой позиции
-            if (i < images.length) {
-                const image = images[i];
+            if (images[i]) {
                 item.innerHTML = `
-                    <img src="${image.url}" alt="${image.title}" loading="lazy">
-                    <p>${image.title}</p>
-                `;
-            } else {
-                // Пустой элемент для заполнения
-                item.innerHTML = `
-                    <div style="width: 100%; height: 300px; background: #f0f0f0; display: flex; align-items: center; justify-content: center; border-radius: 10px;">
-                        <span style="color: #999;">Нет изображения</span>
-                    </div>
-                    <p>Пустой слот</p>
+                    <img src="${images[i].url}" alt="${images[i].title}">
+                    <p>${images[i].title}</p>
                 `;
             }
             
@@ -82,47 +76,24 @@ document.addEventListener('DOMContentLoaded', function() {
         }
         
         // Рассчитываем количество страниц
-        calculatePages();
-        createPagerDots();
-        updateNavButtons();
+        const totalPages = Math.ceil(8 / itemsPerView);
+        totalPagesSpan.textContent = totalPages;
+        
+        // Создаем точки пейджера
+        createPagerDots(totalPages);
+        
+        // Показываем первую страницу
         goToPage(0);
     }
     
-    // Расчет количества страниц
-    function calculatePages() {
-        totalPages = Math.ceil(totalItems / itemsPerView);
-        totalPagesSpan.textContent = totalPages;
-    }
-    
-    // Обновляем количество видимых элементов
-    function updateItemsPerView() {
-        const width = window.innerWidth;
-        
-        if (width <= 768) {
-            itemsPerView = 1;
-        } else if (width <= 992) {
-            itemsPerView = 2;
-        } else {
-            itemsPerView = 3;
-        }
-        
-        // Пересчитываем страницы
-        calculatePages();
-        
-        // Пересоздаем точки пейджера
-        createPagerDots();
-    }
-    
-    // Создаем точки пейджера
-    function createPagerDots() {
+    // Создание точек пейджера
+    function createPagerDots(totalPages) {
         pagerDots.innerHTML = '';
         
         for (let i = 0; i < totalPages; i++) {
             const dot = document.createElement('div');
             dot.className = 'pager-dot';
-            if (i === currentPosition) {
-                dot.classList.add('active');
-            }
+            if (i === 0) dot.classList.add('active');
             
             dot.addEventListener('click', () => {
                 goToPage(i);
@@ -134,34 +105,36 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Переход на страницу
     function goToPage(pageIndex) {
+        const totalPages = Math.ceil(8 / itemsPerView);
+        
         // Проверяем границы
         if (pageIndex < 0) pageIndex = 0;
         if (pageIndex >= totalPages) pageIndex = totalPages - 1;
         
-        currentPosition = pageIndex;
+        currentPage = pageIndex;
         
         // Рассчитываем смещение
         const itemWidth = 100 / itemsPerView;
-        const offset = currentPosition * itemWidth;
+        const offset = currentPage * itemWidth;
         
         // Применяем трансформацию
         galleryTrack.style.transform = `translateX(-${offset}%)`;
         
-        // Обновляем активную точку
-        updatePagerDots();
-        
         // Обновляем номер страницы
-        currentPageSpan.textContent = currentPosition + 1;
+        currentPageSpan.textContent = currentPage + 1;
+        
+        // Обновляем точки пейджера
+        updatePagerDots();
         
         // Обновляем кнопки
         updateNavButtons();
     }
     
-    // Обновляем точки пейджера
+    // Обновление точек пейджера
     function updatePagerDots() {
         const dots = document.querySelectorAll('.pager-dot');
         dots.forEach((dot, index) => {
-            if (index === currentPosition) {
+            if (index === currentPage) {
                 dot.classList.add('active');
             } else {
                 dot.classList.remove('active');
@@ -169,12 +142,13 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
     
-    // Обновляем кнопки навигации
+    // Обновление кнопок навигации
     function updateNavButtons() {
-        prevBtn.disabled = currentPosition === 0;
-        nextBtn.disabled = currentPosition === totalPages - 1;
+        const totalPages = Math.ceil(8 / itemsPerView);
         
-        // Стили для неактивных кнопок
+        prevBtn.disabled = currentPage === 0;
+        nextBtn.disabled = currentPage === totalPages - 1;
+        
         prevBtn.style.opacity = prevBtn.disabled ? '0.5' : '1';
         prevBtn.style.cursor = prevBtn.disabled ? 'not-allowed' : 'pointer';
         
@@ -182,16 +156,18 @@ document.addEventListener('DOMContentLoaded', function() {
         nextBtn.style.cursor = nextBtn.disabled ? 'not-allowed' : 'pointer';
     }
     
-    // Навигация
+    // Следующая страница
     function nextPage() {
-        if (currentPosition < totalPages - 1) {
-            goToPage(currentPosition + 1);
+        const totalPages = Math.ceil(8 / itemsPerView);
+        if (currentPage < totalPages - 1) {
+            goToPage(currentPage + 1);
         }
     }
     
+    // Предыдущая страница
     function prevPage() {
-        if (currentPosition > 0) {
-            goToPage(currentPosition - 1);
+        if (currentPage > 0) {
+            goToPage(currentPage - 1);
         }
     }
     
@@ -199,32 +175,35 @@ document.addEventListener('DOMContentLoaded', function() {
     prevBtn.addEventListener('click', prevPage);
     nextBtn.addEventListener('click', nextPage);
     
+    // Изменение размера окна
     window.addEventListener('resize', function() {
-        updateItemsPerView();
-        goToPage(currentPosition);
+        const newItemsPerView = getItemsPerView();
+        
+        if (newItemsPerView !== itemsPerView) {
+            itemsPerView = newItemsPerView;
+            
+            // Пересоздаем пейджер с новым количеством страниц
+            const totalPages = Math.ceil(8 / itemsPerView);
+            totalPagesSpan.textContent = totalPages;
+            createPagerDots(totalPages);
+            
+            // Корректируем текущую страницу
+            if (currentPage >= totalPages) {
+                currentPage = totalPages - 1;
+            }
+            
+            goToPage(currentPage);
+        }
     });
     
     // Поддержка клавиатуры
     document.addEventListener('keydown', function(event) {
-        if (event.key === 'ArrowLeft') prevPage();
-        if (event.key === 'ArrowRight') nextPage();
-    });
-    
-    // Свайпы для мобильных
-    let touchStartX = 0;
-    galleryTrack.addEventListener('touchstart', function(e) {
-        touchStartX = e.changedTouches[0].screenX;
-    }, {passive: true});
-    
-    galleryTrack.addEventListener('touchend', function(e) {
-        const touchEndX = e.changedTouches[0].screenX;
-        const diff = touchStartX - touchEndX;
-        
-        if (Math.abs(diff) > 50) {
-            if (diff > 0) nextPage();
-            else prevPage();
+        if (event.key === 'ArrowLeft') {
+            prevPage();
+        } else if (event.key === 'ArrowRight') {
+            nextPage();
         }
-    }, {passive: true});
+    });
     
     // Инициализация
     initGallery();
