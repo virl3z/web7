@@ -1,36 +1,36 @@
 document.addEventListener('DOMContentLoaded', function() {
-    // Массив изображений с разными тематиками
+    // Массив изображений с ПРЯМЫМИ ссылками на Unsplash
     const images = [
         {
-            url: 'https://images.unsplash.com/photo-1518837695005-2083093ee35b',
+            url: 'https://images.unsplash.com/photo-1518837695005-2083093ee35b?w=800&h=600&fit=crop',
             title: 'Музыкальные инструменты'
         },
         {
-            url: 'https://images.unsplash.com/photo-1513475382585-d06e58bcb0e0',
+            url: 'https://images.unsplash.com/photo-1513475382585-d06e58bcb0e0?w=800&h=600&fit=crop',
             title: 'Кофейная культура'
         },
         {
-            url: 'https://images.unsplash.com/photo-1516542076529-1ea3854896f2',
+            url: 'https://images.unsplash.com/photo-1516542076529-1ea3854896f2?w-800&h=600&fit=crop',
             title: 'Современная архитектура'
         },
         {
-            url: 'https://images.unsplash.com/photo-1536922246289-88c42f957773',
+            url: 'https://images.unsplash.com/photo-1536922246289-88c42f957773?w=800&h=600&fit=crop',
             title: 'Водный спорт'
         },
         {
-            url: 'https://images.unsplash.com/photo-1519681393784-d120267933ba',
+            url: 'https://images.unsplash.com/photo-1519681393784-d120267933ba?w=800&h=600&fit=crop',
             title: 'Космическое пространство'
         },
         {
-            url: 'https://images.unsplash.com/photo-1545569341-9eb8b30979d9',
+            url: 'https://images.unsplash.com/photo-1545569341-9eb8b30979d9?w=800&h=600&fit=crop',
             title: 'Японская кухня'
         },
         {
-            url: 'https://images.unsplash.com/photo-1517400508447-f8dd518b86db',
+            url: 'https://images.unsplash.com/photo-1517400508447-f8dd518b86db?w=800&h=600&fit=crop',
             title: 'Уличное искусство'
         },
         {
-            url: 'https://images.unsplash.com/photo-1518621736915-f3b1c41bfd00',
+            url: 'https://images.unsplash.com/photo-1518621736915-f3b1c41bfd00?w=800&h=600&fit=crop',
             title: 'Научная лаборатория'
         }
     ];
@@ -59,7 +59,8 @@ document.addEventListener('DOMContentLoaded', function() {
             const item = document.createElement('div');
             item.className = 'gallery-item';
             item.innerHTML = `
-                <img src="${image.url}?w=800&h=600&fit=crop" alt="${image.title}">
+                <img src="${image.url}" alt="${image.title}" 
+                     onerror="this.src='https://images.unsplash.com/photo-1541961017774-22349e4a1262?w=800&h=600&fit=crop'">
                 <p>${image.title}</p>
             `;
             galleryTrack.appendChild(item);
@@ -198,5 +199,5 @@ document.addEventListener('DOMContentLoaded', function() {
     initGallery();
     
     // Выводим сообщение об успешной загрузке
-    console.log('Галерея успешно загружена!');
+    console.log('Галерея успешно загружена! Количество изображений:', images.length);
 });
