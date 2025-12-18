@@ -3,71 +3,45 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Калькулятор стоимости услуги</title>
+    <title>Галерея изображений</title>
     <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
-    <div class="calculator-container">
-        <h1>Калькулятор стоимости услуги</h1>
+    <div class="container">
+        <h1>Галерея изображений</h1>
         
-        <form id="calculator-form">
-            <!-- Поле для ввода количества -->
-            <div class="form-group">
-                <label for="quantity">Количество:</label>
-                <input type="number" id="quantity" name="quantity" min="1" value="1">
-            </div>
-
-            <!-- Выбор типа услуги (радиокнопки) -->
-            <div class="form-group">
-                <label>Тип услуги:</label>
-                <div class="radio-group">
-                    <label class="radio-label">
-                        <input type="radio" name="service-type" value="basic" checked>
-                        <span>Базовая консультация</span>
-                        <span class="price-info">1500 руб.</span>
-                    </label>
-                    <label class="radio-label">
-                        <input type="radio" name="service-type" value="premium">
-                        <span>Премиум поддержка</span>
-                        <span class="price-info">3000 руб.</span>
-                    </label>
-                    <label class="radio-label">
-                        <input type="radio" name="service-type" value="vip">
-                        <span>VIP обслуживание</span>
-                        <span class="price-info">5000 руб.</span>
-                    </label>
+        <div class="gallery-container">
+            <button class="nav-btn prev-btn" aria-label="Предыдущее изображение">
+                <i class="fas fa-chevron-left"></i>
+            </button>
+            
+            <div class="gallery">
+                <div class="gallery-track">
+                    <!-- Изображения будут добавлены через JavaScript -->
                 </div>
             </div>
-
-            <!-- Селект для опций (появляется только для premium) -->
-            <div class="form-group" id="options-container" style="display: none;">
-                <label for="service-option">Опция поддержки:</label>
-                <select id="service-option" name="service-option">
-                    <option value="standard">Стандартная (без доплаты)</option>
-                    <option value="priority">Приоритетная (+20%)</option>
-                    <option value="express">Экспресс (+40%)</option>
-                </select>
+            
+            <button class="nav-btn next-btn" aria-label="Следующее изображение">
+                <i class="fas fa-chevron-right"></i>
+            </button>
+        </div>
+        
+        <div class="pager">
+            <div class="pager-info">
+                Страница: <span class="current-page">1</span> / <span class="total-pages">3</span>
             </div>
-
-            <!-- Чекбокс для свойства (появляется только для vip) -->
-            <div class="form-group" id="property-container" style="display: none;">
-                <label class="checkbox-label">
-                    <input type="checkbox" id="service-property" name="service-property">
-                    <span>Добавить круглосуточную поддержку (+50%)</span>
-                </label>
+            <div class="pager-dots">
+                <!-- Точки пейджера будут добавлены через JavaScript -->
             </div>
-
-            <!-- Блок с результатом -->
-            <div class="result-section">
-                <h2>Итоговая стоимость:</h2>
-                <div class="total-price" id="total-price">1500 руб.</div>
-                <div class="price-breakdown" id="price-breakdown">
-                    Базовая консультация × 1 = 1500 руб.
-                </div>
-            </div>
-        </form>
+        </div>
+        
+        <div class="instructions">
+            <p>Используйте стрелки для навигации или кликайте на точки пейджера.</p>
+            <p>На компьютере видно 3 изображения, на мобильных устройствах - 1.</p>
+        </div>
     </div>
-
-    <script src="calculator.js"></script>
+    
+    <script src="gallery.js"></script>
 </body>
 </html>
