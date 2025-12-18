@@ -46,12 +46,15 @@ h1 {
 .gallery-track {
     display: flex;
     transition: transform 0.5s ease-in-out;
+    width: 100%;
 }
 
+/* ВАЖНО: ширина каждого элемента должна быть 100% / itemsPerView */
 .gallery-item {
-    flex: 0 0 33.333%;
+    flex: 0 0 33.333%; /* По умолчанию 3 изображения */
     padding: 15px;
     transition: transform 0.3s ease;
+    box-sizing: border-box;
 }
 
 .gallery-item:hover {
@@ -175,10 +178,10 @@ h1 {
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
 }
 
-/* Адаптивность для планшетов */
+/* Адаптивность для планшетов (2 изображения) */
 @media (max-width: 992px) {
     .gallery-item {
-        flex: 0 0 50%;
+        flex: 0 0 50% !important; /* 2 изображения */
     }
     
     h1 {
@@ -192,10 +195,10 @@ h1 {
     }
 }
 
-/* Адаптивность для мобильных устройств */
+/* Адаптивность для мобильных устройств (1 изображение) */
 @media (max-width: 768px) {
     .gallery-item {
-        flex: 0 0 100%;
+        flex: 0 0 100% !important; /* 1 изображение */
     }
     
     h1 {
@@ -225,26 +228,5 @@ h1 {
     .instructions {
         font-size: 0.9rem;
         padding: 12px;
-    }
-}
-
-/* Адаптивность для очень маленьких экранов */
-@media (max-width: 480px) {
-    .gallery-item img {
-        height: 200px;
-    }
-    
-    h1 {
-        font-size: 1.5rem;
-    }
-    
-    .nav-btn {
-        width: 35px;
-        height: 35px;
-        margin: 0 5px;
-    }
-    
-    body {
-        padding: 10px;
     }
 }
