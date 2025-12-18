@@ -1,38 +1,14 @@
 document.addEventListener('DOMContentLoaded', function() {
-    // Используем placeholder.com - всегда работает
+    // Массив локальных JPEG изображений (папка называется images)
     const images = [
-        {
-            url: 'https://via.placeholder.com/800x600/4A90E2/FFFFFF?text=Горный+пейзаж',
-            title: 'Горный пейзаж'
-        },
-        {
-            url: 'https://via.placeholder.com/800x600/50E3C2/FFFFFF?text=Лесное+озеро',
-            title: 'Лесное озеро'
-        },
-        {
-            url: 'https://via.placeholder.com/800x600/9013FE/FFFFFF?text=Морской+закат',
-            title: 'Морской закат'
-        },
-        {
-            url: 'https://via.placeholder.com/800x600/F5A623/FFFFFF?text=Пустынный+оазис',
-            title: 'Пустынный оазис'
-        },
-        {
-            url: 'https://via.placeholder.com/800x600/7ED321/FFFFFF?text=Тропический+лес',
-            title: 'Тропический лес'
-        },
-        {
-            url: 'https://via.placeholder.com/800x600/BD10E0/FFFFFF?text=Северное+сияние',
-            title: 'Северное сияние'
-        },
-        {
-            url: 'https://via.placeholder.com/800x600/417505/FFFFFF?text=Долина+цветов',
-            title: 'Долина цветов'
-        },
-        {
-            url: 'https://via.placeholder.com/800x600/D0021B/FFFFFF?text=Вулканический+кратер',
-            title: 'Вулканический кратер'
-        }
+        {url: 'images/photo1.jpg', title: 'Пейзаж'},
+        {url: 'images/photo2.jpg', title: 'Дом'},
+        {url: 'images/photo3.jpg', title: 'Лес'},
+        {url: 'images/photo4.jpg', title: 'Волны'},
+        {url: 'images/photo5.jpg', title: 'Лодка'},
+        {url: 'images/photo6.jpg', title: 'Поле'},
+        {url: 'images/photo7.jpg', title: 'Большой дом'},
+        {url: 'images/photo8.jpg', title: 'Дорога'}
     ];
     
     // Элементы DOM
@@ -46,8 +22,8 @@ document.addEventListener('DOMContentLoaded', function() {
     // Настройки
     let currentPage = 0;
     let itemsPerView = getItemsPerView();
+    const totalImages = images.length;
     
-    // Функция для определения количества видимых изображений
     function getItemsPerView() {
         const width = window.innerWidth;
         if (width <= 768) return 1;
@@ -55,156 +31,101 @@ document.addEventListener('DOMContentLoaded', function() {
         return 3;
     }
     
-    // Инициализация галереи
     function initGallery() {
-        // Очищаем трек
         galleryTrack.innerHTML = '';
         
-        // Создаем 8 изображений
-        for (let i = 0; i < 8; i++) {
+        for (let i = 0; i < totalImages; i++) {
             const item = document.createElement('div');
             item.className = 'gallery-item';
-            
-            if (images[i]) {
-                item.innerHTML = `
-                    <img src="${images[i].url}" alt="${images[i].title}">
-                    <p>${images[i].title}</p>
-                `;
-            }
-            
+            item.innerHTML = `
+                <img src="${images[i].url}" alt="${images[i].title}">
+                <p>${images[i].title}</p>
+            `;
             galleryTrack.appendChild(item);
         }
         
-        // Рассчитываем количество страниц
-        const totalPages = Math.ceil(8 / itemsPerView);
-        totalPagesSpan.textContent = totalPages;
-        
-        // Создаем точки пейджера
-        createPagerDots(totalPages);
-        
-        // Показываем первую страницу
+        updateTotalPages();
+        createPagerDots();
         goToPage(0);
     }
     
-    // Создание точек пейджера
-    function createPagerDots(totalPages) {
+    function updateTotalPages() {
+        const totalPages = Math.ceil(totalImages / itemsPerView);
+        totalPagesSpan.textContent = totalPages;
+        return totalPages;
+    }
+    
+    function createPagerDots() {
         pagerDots.innerHTML = '';
+        const totalPages = updateTotalPages();
         
         for (let i = 0; i < totalPages; i++) {
             const dot = document.createElement('div');
             dot.className = 'pager-dot';
-            if (i === 0) dot.classList.add('active');
+            if (i === currentPage) dot.classList.add('active');
             
-            dot.addEventListener('click', () => {
-                goToPage(i);
-            });
-            
+            dot.addEventListener('click', () => goToPage(i));
             pagerDots.appendChild(dot);
         }
     }
     
-    // Переход на страницу
     function goToPage(pageIndex) {
-        const totalPages = Math.ceil(8 / itemsPerView);
-        
-        // Проверяем границы
+        const totalPages = updateTotalPages();
         if (pageIndex < 0) pageIndex = 0;
         if (pageIndex >= totalPages) pageIndex = totalPages - 1;
         
         currentPage = pageIndex;
-        
-        // Рассчитываем смещение
         const itemWidth = 100 / itemsPerView;
         const offset = currentPage * itemWidth;
         
-        // Применяем трансформацию
         galleryTrack.style.transform = `translateX(-${offset}%)`;
-        
-        // Обновляем номер страницы
         currentPageSpan.textContent = currentPage + 1;
-        
-        // Обновляем точки пейджера
         updatePagerDots();
-        
-        // Обновляем кнопки
         updateNavButtons();
     }
     
-    // Обновление точек пейджера
     function updatePagerDots() {
-        const dots = document.querySelectorAll('.pager-dot');
-        dots.forEach((dot, index) => {
-            if (index === currentPage) {
-                dot.classList.add('active');
-            } else {
-                dot.classList.remove('active');
-            }
+        document.querySelectorAll('.pager-dot').forEach((dot, i) => {
+            dot.classList.toggle('active', i === currentPage);
         });
     }
     
-    // Обновление кнопок навигации
     function updateNavButtons() {
-        const totalPages = Math.ceil(8 / itemsPerView);
-        
+        const totalPages = updateTotalPages();
         prevBtn.disabled = currentPage === 0;
         nextBtn.disabled = currentPage === totalPages - 1;
         
         prevBtn.style.opacity = prevBtn.disabled ? '0.5' : '1';
-        prevBtn.style.cursor = prevBtn.disabled ? 'not-allowed' : 'pointer';
-        
         nextBtn.style.opacity = nextBtn.disabled ? '0.5' : '1';
-        nextBtn.style.cursor = nextBtn.disabled ? 'not-allowed' : 'pointer';
     }
     
-    // Следующая страница
     function nextPage() {
-        const totalPages = Math.ceil(8 / itemsPerView);
-        if (currentPage < totalPages - 1) {
-            goToPage(currentPage + 1);
-        }
+        const totalPages = updateTotalPages();
+        if (currentPage < totalPages - 1) goToPage(currentPage + 1);
     }
     
-    // Предыдущая страница
     function prevPage() {
-        if (currentPage > 0) {
-            goToPage(currentPage - 1);
-        }
+        if (currentPage > 0) goToPage(currentPage - 1);
     }
     
-    // Обработчики событий
     prevBtn.addEventListener('click', prevPage);
     nextBtn.addEventListener('click', nextPage);
     
-    // Изменение размера окна
     window.addEventListener('resize', function() {
         const newItemsPerView = getItemsPerView();
-        
         if (newItemsPerView !== itemsPerView) {
             itemsPerView = newItemsPerView;
-            
-            // Пересоздаем пейджер с новым количеством страниц
-            const totalPages = Math.ceil(8 / itemsPerView);
-            totalPagesSpan.textContent = totalPages;
-            createPagerDots(totalPages);
-            
-            // Корректируем текущую страницу
-            if (currentPage >= totalPages) {
-                currentPage = totalPages - 1;
-            }
-            
+            createPagerDots();
+            const totalPages = updateTotalPages();
+            if (currentPage >= totalPages) currentPage = totalPages - 1;
             goToPage(currentPage);
         }
     });
     
-    // Поддержка клавиатуры
-    document.addEventListener('keydown', function(event) {
-        if (event.key === 'ArrowLeft') {
-            prevPage();
-        } else if (event.key === 'ArrowRight') {
-            nextPage();
-        }
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'ArrowLeft') prevPage();
+        if (e.key === 'ArrowRight') nextPage();
     });
     
-    // Инициализация
     initGallery();
 });
